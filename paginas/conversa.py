@@ -4,10 +4,13 @@ from dotenv import load_dotenv
 import streamlit as st
 from streamlit_lottie import st_lottie
 from paginas.me import load_lottiefile
+
 load_dotenv()
 animacao2 = load_lottiefile('pictures/animacao_ia2.json')
-
-
+st.title('Agentes de IA')
+with st.expander('Sobre o Projeto'):
+     st.write('Esse Sistema Tem Como Objetivo Mostrar Como Dois Agentes de IA Podem Conversar Entre Si, e Resolver Problemas Juntos.\
+              Para iniciar a conversa, Você Pode Definir o Idioma, a Função de Cada Agente e o Assunto da Conversa.')
 col1,col2 = st.columns([1.2,0.5], vertical_alignment='center')
 with col1:
     idioma = st.selectbox(label='Idioma', options=['Português','Inglês','Japonês','Russo','Espanhol','Frânces','Italiano'])
@@ -38,7 +41,7 @@ student_agent = ConversableAgent(
           
         "api_key": os.getenv("GROQ_API_KEY"),
         "api_type": "groq",
-        "temperature":5
+        "temperature":1
     },
 )
 
@@ -51,7 +54,7 @@ teacher_agent = ConversableAgent(
           
         "api_key": os.getenv("GROQ_API_KEY"),
         "api_type": "groq",
-        "temperature":5  
+        "temperature":1
     },
 )
 

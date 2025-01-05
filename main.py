@@ -26,12 +26,6 @@ pag1 = st.Page(
 
 
 pag2 = st.Page(
-    page="paginas/teste.py",
-    title='Gráficos',
-    icon='📊'
-)
-
-pag3 = st.Page(
     page= "paginas\me.py",
     title="Sobre Mim",
     icon= 'ℹ'
@@ -41,8 +35,8 @@ pag3 = st.Page(
 
 pagina= st.navigation({
         "Conversação":[pag1],
-        "Gráficos":[pag2],
-        'Sobre Mim':[pag3]
+        "Gráficos":[pag2]
+
 
     }
 )
