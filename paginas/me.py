@@ -68,16 +68,14 @@ def perfil():
                     - Criação de Agentes de AI para resolução de Problemas.
                     _____________________________________________________________________
                     - Análise e mineração de dados em bases diversas, como aquelas envolvendo filmes e séries, e dados médicos de pacientes com problemas cardíacos.
-                  _____________________________________________________________________
+                    ________________________________________________________________________
                     - Aplicação modelos de Machine Learning para recomendações de filmes e séries, bem como para a previsão de doenças cardíacas.
-                 _____________________________________________________________________
+                    _____________________________________________________________________
                     - Desenvolvimento de sistemas web utilizando o framework Streamlit, criando interfaces para operações CRUD.
-                 _____________________________________________________________________
+                    _____________________________________________________________________
                     - Desenvolvimento de sistemas web utilizando o framework Streamlit, criando interfaces gráficas interativas para visualização de dados.
-                 _____________________________________________________________________
-                   - Modelagem de Banco de Dados.
-                                                                          
-                   ''')
+                    _____________________________________________________________________
+                    - Modelagem de Banco de Dados.''')
     st.write("________________________________________________________________________")    
     col5,col6= st.columns([0.6,1], gap='small',vertical_alignment='center')    
     with col5:
