@@ -28,7 +28,7 @@ with col1:
                              placeholder='Como podemos unir a engenharia e logística?')
     escolha = st.radio('Escolha quem irá iniciar a conversa', options=[agente1,agente2])
 
-    turnos = st.slider('Quantidade de Turnos', min_value=1, max_value=10, value=2)
+    turnos = st.slider('Quantidade de Turnos', min_value=1, max_value=6, value=2)
     with st.expander('Nota Sobre os Turnos'):
         st.warning('Os agentes irão conversar pela quantidade de turnos escolhida. Mas lembre-se mais turnos geram um tempo de espera um pouco maior.')
     button= st.button('Iniciar Conversa')
