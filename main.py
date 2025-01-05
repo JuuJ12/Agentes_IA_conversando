@@ -26,7 +26,7 @@ pag1 = st.Page(
 
 
 pag2 = st.Page(
-    page= "paginas\me.py",
+    page= "paginas/me.py",
     title="Sobre Mim",
     icon= 'ℹ'
 )
