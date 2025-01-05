@@ -65,15 +65,15 @@ def perfil():
     with col4:
 
         st.write('''
-                   - Análise e mineração de dados em bases diversas, como aquelas envolvendo filmes e séries, e dados médicos de pacientes com problemas cardíacos.
+                    - Criação de Agentes de AI para resolução de Problemas.
+                    _____________________________________________________________________
+                    - Análise e mineração de dados em bases diversas, como aquelas envolvendo filmes e séries, e dados médicos de pacientes com problemas cardíacos.
                   _____________________________________________________________________
-                   - Aplicação modelos de Machine Learning para recomendações de filmes e séries, bem como para a previsão de doenças cardíacas.
+                    - Aplicação modelos de Machine Learning para recomendações de filmes e séries, bem como para a previsão de doenças cardíacas.
                  _____________________________________________________________________
-                   - Desenvolvimento de sistemas web utilizando o framework Streamlit, criando interfaces para operações CRUD.
+                    - Desenvolvimento de sistemas web utilizando o framework Streamlit, criando interfaces para operações CRUD.
                  _____________________________________________________________________
-                   - Desenvolvimento de sistemas web utilizando o framework Streamlit, criando interfaces gráficas interativas para visualização de dados.
-                 _____________________________________________________________________
-                   - Criação de Agentes de AI para resolução de Problemas.
+                    - Desenvolvimento de sistemas web utilizando o framework Streamlit, criando interfaces gráficas interativas para visualização de dados.
                  _____________________________________________________________________
                    - Modelagem de Banco de Dados.
                                                                           
@@ -185,7 +185,8 @@ def perfil():
     st.markdown("""
             <link href="https://cdn.jsdelivr.net/npm/devicon@2.14.0/devicon.min.css" rel="stylesheet">
         """, unsafe_allow_html=True)
-
+    st.markdown("""[Linkedin](https://www.linkedin.com/mynetwork/grow/?skipRedirect=true)""")
+    st.markdown("""[Github](https://github.com/JuuJ12)""")
     button = st.button(":e-mail: Entre em Contato")
     if button:
         formulario()
