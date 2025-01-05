@@ -8,14 +8,17 @@ from paginas.me import load_lottiefile
 load_dotenv()
 animacao2 = load_lottiefile('pictures/animacao_ia2.json')
 st.title('Agentes de IA')
+
 with st.expander('Sobre o Projeto'):
-     st.write('Esse Sistema Tem Como Objetivo Mostrar Como Dois Agentes de IA Podem Conversar Entre Si, e Resolver Problemas Juntos.\
-              Para iniciar a conversa, Você Pode Definir o Idioma, a Função de Cada Agente e o Assunto da Conversa.')
+     st.write('Esse sistema tem como objetivo mostrar como dois agentes de Inteligência Artificial(IA) podem conversar entre si,\
+                e resolver problemas juntos. Para iniciar a conversa, você pode definir o idioma,\
+                a função de cada agente e o assunto da conversa.')
+     
 col1,col2 = st.columns([1.2,0.5], vertical_alignment='center')
 with col1:
     idioma = st.selectbox(label='Idioma', options=['Português','Inglês','Japonês','Russo','Espanhol','Frânces','Italiano'])
 
-    agente1=st.text_input(label='Função do Agente 1', help='Defina Qual Será a Especialidade do Agente 1.', 
+    agente1=st.text_input(label='Função do Agente 1', help='Defina Qual Será a Especialidade do Agente 1 . ', 
                           placeholder='Ex: Profissional de Logística', key='agente1')
 
     agente2=st.text_input(label='Função do Agente 2', help='Defina Qual Será a Especialidade do Agente 2.', 
@@ -23,6 +26,7 @@ with col1:
 
     assunto = st.text_input(label='Assunto', help='Defina Sobre o que os Agentes Irão Falar ou o que Irão Resolver.',
                              placeholder='Como podemos unir a engenharia e logística?')
+    escolha = st.radio('Escolha quem irá iniciar a conversa', options=[agente1,agente2])
 
     button= st.button('Iniciar Conversa')
 
@@ -33,7 +37,7 @@ with col2:
     st_lottie(animacao)
     
 
-student_agent = ConversableAgent(
+agente_1 = ConversableAgent(
     name="Agente 1",
     system_message=(f'Você vai responder sempre em {idioma} e será {agente1}'),
     llm_config={
@@ -46,7 +50,7 @@ student_agent = ConversableAgent(
 )
 
 
-teacher_agent = ConversableAgent(
+agente_2 = ConversableAgent(
     name="Agente 2",
     system_message=(f' Você vai responder sempre em {idioma} e será {agente2}'),
     llm_config={
@@ -58,14 +62,22 @@ teacher_agent = ConversableAgent(
     },
 )
 
-
-def chat(assunto):
-    chat_result = student_agent.initiate_chat(
-        teacher_agent,
-        message=assunto,
-        max_turns=4
-    )
-    return chat_result
+if escolha == 'Agente 1':
+    def chat(assunto):
+        chat_result = agente_1.initiate_chat(
+            agente_2,
+            message=assunto,
+            max_turns=4
+        )
+        return chat_result
+elif escolha == 'Agente 2':
+    def chat(assunto):
+        chat_result = agente_2.initiate_chat(
+            agente_1,
+            message=assunto,
+            max_turns=4
+        )
+        return chat_result
 
 if button:
     with st.spinner('Aguarde um momento, os agentes estão batendo um papo 🗣...'):
