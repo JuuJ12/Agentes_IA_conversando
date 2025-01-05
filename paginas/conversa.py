@@ -28,6 +28,9 @@ with col1:
                              placeholder='Como podemos unir a engenharia e logística?')
     escolha = st.radio('Escolha quem irá iniciar a conversa', options=[agente1,agente2])
 
+    turnos = st.slider('Quantidade de Turnos', min_value=1, max_value=10, value=2)
+    with st.expander('Nota Sobre os Turnos'):
+        st.warning('Os agentes irão conversar pela quantidade de turnos escolhida. Mas lembre-se mais turnos geram um tempo de espera um pouco maior.')
     button= st.button('Iniciar Conversa')
 
 
@@ -38,7 +41,7 @@ with col2:
     
 
 agente_1 = ConversableAgent(
-    name="Agente 1",
+    name=agente1,
     system_message=(f'Você vai responder sempre em {idioma} e será {agente1}'),
     llm_config={
         "model": "llama3-70b-8192",
@@ -51,7 +54,7 @@ agente_1 = ConversableAgent(
 
 
 agente_2 = ConversableAgent(
-    name="Agente 2",
+    name=agente2,
     system_message=(f' Você vai responder sempre em {idioma} e será {agente2}'),
     llm_config={
         "model": "llama3-70b-8192",
@@ -62,28 +65,33 @@ agente_2 = ConversableAgent(
     },
 )
 
-if escolha == 'Agente 1':
-    def chat(assunto):
+
+def chat1(assunto):
         chat_result = agente_1.initiate_chat(
             agente_2,
             message=assunto,
-            max_turns=4
+            max_turns=turnos
         )
         return chat_result
-elif escolha == 'Agente 2':
-    def chat(assunto):
+
+
+def chat2(assunto):
         chat_result = agente_2.initiate_chat(
             agente_1,
             message=assunto,
-            max_turns=4
+            max_turns=turnos
         )
         return chat_result
 
 if button:
     with st.spinner('Aguarde um momento, os agentes estão batendo um papo 🗣...'):
+        if escolha == agente1:
         
-        
-        resultado = chat(assunto)
+            resultado = chat1(assunto)
+
+        else:
+             resultado = chat2(assunto)
+
     for turn in resultado.chat_history:
             with st.chat_message('ai'):
                 st.write(f"{turn['name']}: {turn['content']}")

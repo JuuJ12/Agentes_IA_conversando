@@ -35,7 +35,7 @@ pag2 = st.Page(
 
 pagina= st.navigation({
         "Conversação":[pag1],
-        "Gráficos":[pag2]
+        "Info":[pag2]
 
 
     }
