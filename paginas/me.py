@@ -185,6 +185,7 @@ def perfil():
         """, unsafe_allow_html=True)
     st.markdown("""[Linkedin](https://www.linkedin.com/mynetwork/grow/?skipRedirect=true)""")
     st.markdown("""[Github](https://github.com/JuuJ12)""")
+    st.markdown("""[Outros Projetos](https://dashboardsheartattacks.streamlit.app/)""")
     button = st.button(":e-mail: Entre em Contato")
     if button:
         formulario()
