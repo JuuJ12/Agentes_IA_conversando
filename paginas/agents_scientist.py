@@ -32,7 +32,7 @@ with col2:
     
 
 agente_1 = ConversableAgent(
-    name='Gerador',
+    name='Agente-Gerador-Hipóteses',
     system_message=(f'Você vai responder sempre em {idioma} e será um gerador de hipóteses criativas e cientificamente embasadas sobre o tema fornecido. '),
     llm_config={
         "model": "llama3-70b-8192",
