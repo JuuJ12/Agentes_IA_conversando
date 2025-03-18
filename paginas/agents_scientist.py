@@ -10,9 +10,8 @@ animacao2 = load_lottiefile('pictures/animacao_ia2.json')
 st.title('Agentes de Inteligência Artificial')
 
 with st.expander('Sobre o Projeto'):
-     st.write('Esse sistema tem como objetivo mostrar como dois agentes de Inteligência Artificial(IA) podem conversar entre si,\
-                e resolver problemas juntos. Para iniciar a conversa, você pode definir o idioma,\
-                a função de cada agente e o assunto da conversa.')
+     st.write('Esse sistema tem como objetivo mostrar como  agentes de Inteligência Artificial(IA) podem conversar entre si,\
+                e resolver problemas juntos. Para iniciar a conversa, você pode definir assunto da conversa.')
      
 col1,col2 = st.columns([1.2,0.5], vertical_alignment='center')
 with col1:
