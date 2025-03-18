@@ -25,7 +25,13 @@ pag1 = st.Page(
 )
 
 
-pag2 = st.Page(
+pag2=st.Page(
+    page= "paginas/agents_scientist.py",
+    title="Ciêntistas",
+    icon= '👨‍🔬'
+)
+
+pag3 = st.Page(
     page= "paginas/me.py",
     title="Sobre Mim",
     icon= 'ℹ'
@@ -33,9 +39,10 @@ pag2 = st.Page(
 
 
 
-pagina= st.navigation({
+paginas= st.navigation({
         "Conversação":[pag1],
-        "Info":[pag2]
+        "Agentes Ciêntistas":[pag2],
+        "Info":[pag3]
 
 
     }
@@ -43,5 +50,5 @@ pagina= st.navigation({
 
 
 
-pagina.run()
+paginas.run()
 
