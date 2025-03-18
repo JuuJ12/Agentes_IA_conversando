@@ -20,7 +20,7 @@ with col1:
 
     global assunto
     assunto = st.text_input(label='Assunto', help='Defina o assunto que os agentes irão gerar hipoteses e irão aplicar revisão, classificação,evolução,organização e meta-revisão para as hipoteses.',
-                             placeholder='Problema dos Três Corpos')
+                             placeholder=' Exemplo: Problema dos Três Corpos')
     button= st.button('Iniciar Conversa')
 
 
