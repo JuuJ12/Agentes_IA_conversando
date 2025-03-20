@@ -13,6 +13,8 @@ with st.expander('Sobre o Projeto'):
      st.write('Esse sistema tem como objetivo mostrar como dois agentes de Inteligência Artificial(IA) podem conversar entre si\
                 e resolver problemas juntos. Para iniciar a conversa, você pode definir o idioma,\
                 a função de cada agente e o assunto da conversa.')
+
+
      
 col1,col2 = st.columns([1.2,0.5], vertical_alignment='center')
 with col1:
@@ -42,9 +44,9 @@ with col2:
 
 agente_1 = ConversableAgent(
     name='Agente1',
-    system_message=(f'Você vai responder sempre em {idioma} e será {agente1}'),
+    system_message=(f'Você vai responder sempre no idioma {idioma} e será {agente1}'),
     llm_config={
-        "model": "llama3-70b-8192",
+        "model": "qwen-2.5-32b",
           
         "api_key": os.getenv("GROQ_API_KEY"),
         "api_type": "groq",
@@ -55,9 +57,9 @@ agente_1 = ConversableAgent(
 
 agente_2 = ConversableAgent(
     name="Agente2",
-    system_message=(f' Você vai responder sempre em {idioma} e será {agente2}'),
+    system_message=(f' Você vai responder sempre no idiomar {idioma} e será {agente2}'),
     llm_config={
-        "model": "llama3-70b-8192",
+        "model": "qwen-2.5-32b",
           
         "api_key": os.getenv("GROQ_API_KEY"),
         "api_type": "groq",
