@@ -24,7 +24,7 @@ with st.expander('Ajustando seu Agentes'):
 
         global funcao_agente1, funcao_agente2, funcao_agente3,funcao_agente4,funcao_agente5,funcao_agente6
         funcao_agente1 = st.text_input(label='Função do Agente 1', help='Por padrão o Agente 1 é um Gerador de Hipóteses.',
-                             placeholder=' Exemplo: Planejador Estratégico') or 'Gerador de Hipóteses.'
+                             placeholder=' Exemplo: Planejador Estratégico') or 'Gerador de Hipóteses e escolherá algum assunto para gerar hipoteses.'
         funcao_agente2 = st.text_input(label='Função do Agente 2', help='Por padrão o Agente 2 é um Revisor.',
                              placeholder=' Exemplo: Analista de Tendêcnias') or 'Revisor'
         funcao_agente3 = st.text_input(label='Função do Agente 3', help='Por padrão o Agente 3 é um Classficador.',
