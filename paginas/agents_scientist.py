@@ -14,7 +14,7 @@ with st.expander('Sobre o Projeto'):
                 e resolver problemas juntos. Para iniciar a conversa, você pode definir assunto da conversa.')
 
 
-with st.expander('Ajustando seu Agentes'):
+with st.expander('Ajustando seus Agentes'):
     
     col1, col2 = st.columns(2)
     with col1:
