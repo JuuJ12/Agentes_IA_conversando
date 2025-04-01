@@ -158,7 +158,7 @@ agente_7 = ConversableAgent(
     name="Agente-7-Sintetizador",
     system_message=(f'''Você vai responder sempre em {idioma}, sua função será 
                     Ler todas as soluções finais dos debatedores
-                    e consolidar uma solução final abrangente para o problema elencando as melhores ideias do debate realizado'''),
+                    e consolidar uma solução final abrangente para o problema elencando as melhores ideias dos debatedores no debate realizado'''),
     llm_config={
         "model": modelo_agente_6,
           
