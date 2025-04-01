@@ -58,6 +58,8 @@ with st.expander('Ajustando seus Agentes'):
         
         modelo_agente_6 = st.selectbox('Selecione o Modelo do Agente 6',options=['llama3-70b-8192',
                                                                                  'gemma2-9b-it','mistral-saba-24b'])or 'llama3-70b-8192'
+        modelo_agente_7 = st.selectbox('Selecione o Modelo do Agente Sintetizador',options=['llama3-70b-8192',
+                                                                                 'gemma2-9b-it','mistral-saba-24b'])or 'llama3-70b-8192'
 
 col1,col2 = st.columns([1.2,0.5], vertical_alignment='center')
 with col1:
@@ -144,7 +146,7 @@ agente_6 = ConversableAgent(
     name="Agente-6",
     system_message=(f'''Você vai responder sempre em {idioma}, sempre vai atacar e tentar resolver o problema e sua função é {funcao_agente6}.'''),
     llm_config={
-        "model": modelo_agente_6,
+        "model": modelo_agente_7,
           
         "api_key": os.getenv("GROQ_API_KEY"),
         "api_type": "groq",
@@ -152,6 +154,19 @@ agente_6 = ConversableAgent(
     },
 )
 
+agente_7 = ConversableAgent(
+    name="Agente-7-Sintetizador",
+    system_message=(f'''Você vai responder sempre em {idioma}, sua função será 
+                    Ler todas as soluções finais dos debatedores
+                    e consolidar uma solução final abrangente para o problema elencando as melhores ideias do debate realizado'''),
+    llm_config={
+        "model": modelo_agente_6,
+          
+        "api_key": os.getenv("GROQ_API_KEY"),
+        "api_type": "groq",
+        "temperature":1
+    },
+)
 
 
 def chat1(assunto):
@@ -186,6 +201,11 @@ def chat1(assunto):
         resposta_agente_6 = chat_result_6['content']
         st.write(f'**Modelo Utilizado** **{modelo_agente_6}**')
         yield f"\n🧐**{agente_6.name}** respondeu, {resposta_agente_6}"
+
+        chat_result_7 = agente_7.generate_reply(messages=[{"role": "user", "content": f" Resposta do agente 1 :{resposta_agente_1}\n Resposta do agente 2 :{resposta_agente_2}\n Resposta do agente 3 :{resposta_agente_3}\n Resposta do agente 4: {resposta_agente_4}\n Resposta do agente 5: {resposta_agente_5}\n Resposta do agente 6: {resposta_agente_6}"}])
+        resposta_agente_7 = chat_result_7['content']
+        st.write(f'**Modelo Utilizado** **{modelo_agente_7}**')
+        yield f"\n👨‍🔬**{agente_7.name}** respondeu, {resposta_agente_7}"
 
         
         
