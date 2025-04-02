@@ -78,7 +78,7 @@ def get_best_action(state):
     if q_values:
         # Seleciona a melhor ação pelo valor Q máximo
         best_action = max(q_values, key=q_values.get)
-        return f"Ação mais promissora: {best_action[:50]}..."  # Mostra um resumo da ação
+        return f"Ação mais promissora: {best_action[:100]}..."  # Mostra um resumo da ação
     else:
         return "Nenhuma ação registrada"
 
@@ -221,7 +221,7 @@ agente_6 = ConversableAgent(
     name="Agente-6",
     system_message=(f'''Você vai responder sempre em {idioma}, sempre vai atacar e tentar resolver o problema e sua função é {funcao_agente6}.'''),
     llm_config={
-        "model": modelo_agente_7,
+        "model": modelo_agente_6,
           
         "api_key": os.getenv("GROQ_API_KEY"),
         "api_type": "groq",
@@ -235,7 +235,7 @@ agente_7 = ConversableAgent(
                     Ler todas as soluções finais dos debatedores
                     e consolidar uma solução final abrangente para o problema elencando as melhores ideias dos debatedores no debate realizado'''),
     llm_config={
-        "model": modelo_agente_6,
+        "model": modelo_agente_7,
           
         "api_key": os.getenv("GROQ_API_KEY"),
         "api_type": "groq",
