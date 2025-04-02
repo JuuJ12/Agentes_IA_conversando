@@ -162,7 +162,7 @@ agente_1 = ConversableAgent(
           
         "api_key": os.getenv("GROQ_API_KEY"),
         "api_type": "groq",
-        "temperature":1
+        "temperature":0
     },
 )
 
@@ -175,7 +175,7 @@ agente_2 = ConversableAgent(
           
         "api_key": os.getenv("GROQ_API_KEY"),
         "api_type": "groq",
-        "temperature":1
+        "temperature":0
     },
 )
 
@@ -187,7 +187,7 @@ agente_3 = ConversableAgent(
           
         "api_key": os.getenv("GROQ_API_KEY"),
         "api_type": "groq",
-        "temperature":1
+        "temperature":0
     },
 )
 
@@ -200,7 +200,7 @@ agente_4 = ConversableAgent(
           
         "api_key": os.getenv("GROQ_API_KEY"),
         "api_type": "groq",
-        "temperature":1
+        "temperature":0
     },
 )
 
@@ -213,7 +213,7 @@ agente_5 = ConversableAgent(
           
         "api_key": os.getenv("GROQ_API_KEY"),
         "api_type": "groq",
-        "temperature":1
+        "temperature":0
     },
 )
 
@@ -225,7 +225,7 @@ agente_6 = ConversableAgent(
           
         "api_key": os.getenv("GROQ_API_KEY"),
         "api_type": "groq",
-        "temperature":1
+        "temperature":0
     },
 )
 
@@ -236,13 +236,15 @@ agente_7 = ConversableAgent(
                     2. Consolidar uma solução final abrangente para o problema abordado, unificando as principais contribuições.
                     3. Elencar as melhores ideias dos debatedores de forma clara e estruturada, destacando os autores e justificando por que essas ideias se destacam no debate realizado.
                     4. Finalizar com uma conclusão destacando os pontos-chave que representam o consenso ou as ideias mais inovadoras e impactantes.
+                    5. Reescrever o texto inicial, incorporando as sugestões discutidas e aplicando as melhorias apontadas no debate. O texto reformulado deve ser coeso, claro e refletir as correções sugeridas.
+                    6. Considere o texto inicial como o conteúdo apresentado pelo primeiro agente que iniciou a discussão.
                     '''),
     llm_config={
         "model": modelo_agente_7,
           
         "api_key": os.getenv("GROQ_API_KEY"),
         "api_type": "groq",
-        "temperature":1
+        "temperature":0
     },
 )
 
