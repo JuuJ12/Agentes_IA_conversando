@@ -263,7 +263,7 @@ def chat(assunto):
 
         respostas.append(resposta)
         previous_response = resposta
-        st.write(f"**Modelo Utilizado:** {agente.llm_config["model"]}")
+        st.write(f"**Modelo Utilizado:** {agente.llm_config.config_list[0]['model']}")
         st.write(f"💡 Ação recomendada com base na Equação de Bellman: **{best_action}**")
         yield f"\n🤖 **{agente.name}** respondeu: {resposta}"
         st.write("________")
@@ -271,7 +271,7 @@ def chat(assunto):
 
     resposta_sintetizada = agente_7.generate_reply(messages=[{"role": "user", "content": " ".join(respostas)}])
     resposta_final = resposta_sintetizada['content']
-    st.write(f"**Modelo Utilizado:** {agente_7.llm_config["model"]}")
+    st.write(f"**Modelo Utilizado:** {agente_7.llm_config.config_list[0]['model']}")
     yield f"\n📝 **{agente_7.name}** sintetizou: {resposta_final}"
 
 
