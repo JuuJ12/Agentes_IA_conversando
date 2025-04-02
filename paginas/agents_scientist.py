@@ -231,9 +231,12 @@ agente_6 = ConversableAgent(
 
 agente_7 = ConversableAgent(
     name="Agente-7-Sintetizador",
-    system_message=(f'''Você vai responder sempre em {idioma}, sua função será 
-                    Ler todas as soluções finais dos debatedores
-                    e consolidar uma solução final abrangente para o problema elencando as melhores ideias dos debatedores no debate realizado'''),
+    system_message=(f'''Você vai responder sempre em {idioma}. Sua função será:
+                    1. Ler todas as soluções finais dos debatedores.
+                    2. Consolidar uma solução final abrangente para o problema abordado, unificando as principais contribuições.
+                    3. Elencar as melhores ideias dos debatedores de forma clara e estruturada, destacando os autores e justificando por que essas ideias se destacam no debate realizado.
+                    4. Finalizar com uma conclusão destacando os pontos-chave que representam o consenso ou as ideias mais inovadoras e impactantes.
+                    '''),
     llm_config={
         "model": modelo_agente_7,
           
