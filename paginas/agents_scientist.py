@@ -285,5 +285,5 @@ if button:
 
                 with st.chat_message('ai'):
                     st.write(resultado)
-                    st.write("________")
+
 
