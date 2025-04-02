@@ -38,7 +38,6 @@ pag3 = st.Page(
 )
 
 
-
 paginas= st.navigation({
         "Conversação":[pag1],
         "Agentes Ciêntistas":[pag2],
@@ -47,8 +46,6 @@ paginas= st.navigation({
 
     }
 )
-
-
 
 paginas.run()
 

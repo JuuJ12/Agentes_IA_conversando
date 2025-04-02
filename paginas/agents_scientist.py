@@ -4,9 +4,84 @@ from dotenv import load_dotenv
 import streamlit as st
 from streamlit_lottie import st_lottie
 from paginas.me import load_lottiefile
+import numpy as np
+import random
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 load_dotenv()
 animacao2 = load_lottiefile('pictures/animacao_ia2.json')
+
+# Função para calcular a similaridade de cosseno entre duas strings
+
+def distance(state, goal_state):
+    try:
+        vectorizer = TfidfVectorizer()
+        tfidf_matrix = vectorizer.fit_transform([state, goal_state])
+        similarity = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:2])[0][0]
+        dist = 1 - similarity  # Quanto maior a similaridade, menor a distância
+        return dist
+    except Exception as e:
+        print(f"Erro ao calcular a distância: {e}")
+        return 1.0  # Distância máxima em caso de erro
+
+# Função para calcular a recompensa
+def calculate_reward(state, goal_state):
+    try:
+        dist = distance(state, goal_state)
+        reward = -dist  # Quanto menor a distância, maior a recompensa (valor negativo)
+        return reward
+    except Exception as e:
+        print(f"Erro ao calcular a recompensa: {e}")
+        return -np.inf  # Penalidade alta em caso de erro
+
+# Função para atualizar valor Q com tratamento de NaN
+q_table = {}
+
+def update_q_value(state, action, reward, next_state, alpha=0.1, gamma=0.9):
+    try:
+        state_action = (state, action)
+        
+        # Inicializa valor Q se não existir
+        if state_action not in q_table:
+            q_table[state_action] = 0.0
+            
+        # Valor Q atual
+        current_q = q_table[state_action]
+        
+        # Melhor valor Q para o próximo estado
+        next_q_values = [q_table.get((next_state, a), 0.0) for a in range(6)]
+        max_next_q = max(next_q_values) if next_q_values else 0.0
+
+        # Atualização de Q-Valor com verificação de NaN
+        new_q = current_q + alpha * (reward + gamma * max_next_q - current_q)
+        if np.isnan(new_q):
+            print("Valor Q resultante é NaN. Ignorando atualização.")
+            return
+
+        q_table[state_action] = new_q
+    except Exception as e:
+        print(f"Erro ao atualizar valor Q: {e}")
+
+# Função para obter a melhor ação usando epsilon-greedy
+# Função para obter a melhor ação usando epsilon-greedy
+epsilon = 0.1
+
+def get_best_action(state):
+    # Exploração: escolher uma ação aleatória com probabilidade epsilon
+    if random.uniform(0, 1) < epsilon:
+        return "Exploração Aleatória"  # Uma indicação clara de exploração
+
+    # Obter as ações registradas no estado atual
+    q_values = {action: q_value for (s, action), q_value in q_table.items() if s == state}
+    
+    if q_values:
+        # Seleciona a melhor ação pelo valor Q máximo
+        best_action = max(q_values, key=q_values.get)
+        return f"Ação mais promissora: {best_action[:50]}..."  # Mostra um resumo da ação
+    else:
+        return "Nenhuma ação registrada"
+
 st.title('Agentes de Inteligência Artificial')
 
 with st.expander('Sobre o Projeto'):
@@ -168,52 +243,43 @@ agente_7 = ConversableAgent(
     },
 )
 
-
-def chat1(assunto):
         
-        chat_result_1 = agente_1.generate_reply(messages=[{"role": "user", "content": f"{assunto}"}])
-        resposta_agente_1 = chat_result_1['content']
-        st.write(f'**Modelo Utilizado** **{modelo_agente_1}**')
-        yield f"\n🧠**{agente_1.name}**\n respondeu : {resposta_agente_1}"
+def chat(assunto):
+    state = "inicio"
+    previous_response = assunto
+    agentes = [agente_1, agente_2, agente_3, agente_4, agente_5, agente_6]
+    respostas = []
 
-        chat_result_2 = agente_2.generate_reply(messages=[{"role": "user", "content": f"{resposta_agente_1}"}])
-        resposta_agente_2 = chat_result_2['content']
-        st.write(f'**Modelo Utilizado** **{modelo_agente_2}**')
-        yield f"\n✍️**{agente_2.name}** respondeu, {resposta_agente_2} "
-
+    for idx, agente in enumerate(agentes):
+        chat_result = agente.generate_reply(messages=[{"role": "user", "content": previous_response}])
+        resposta = chat_result['content']
+        next_state = f"debate-{idx+1}"
         
-        chat_result_3 = agente_3.generate_reply(messages=[{"role": "user", "content": f" {resposta_agente_2}"}])
-        resposta_agente_3 = chat_result_3['content']
-        st.write(f'**Modelo Utilizado** **{modelo_agente_3}**')
-        yield f"\n📊**{agente_3.name}** respondeu , {resposta_agente_3}"
+        # Calcula a recompensa com base na resposta
+        goal_state = "objetivo"  # Defina um estado objetivo apropriado
+        reward = calculate_reward(resposta, goal_state)
+        update_q_value(state, resposta, reward, next_state)
+        best_action = get_best_action(state)
 
-        chat_result_4 = agente_4.generate_reply(messages=[{"role": "user", "content": f"{resposta_agente_3}"}])
-        resposta_agente_4 = chat_result_4['content']
-        st.write(f'**Modelo Utilizado** **{modelo_agente_4}**')
-        yield f"\n🔬**{agente_4.name}** respondeu, {resposta_agente_4}"
-        
-        chat_result_5 = agente_5.generate_reply(messages=[{"role": "user", "content": f" {resposta_agente_4}"}])
-        resposta_agente_5 = chat_result_5['content']
-        st.write(f'**Modelo Utilizado** **{modelo_agente_5}**')
-        yield f"\n 👷‍♂️ **{agente_5.name}** respondeu, {resposta_agente_5}"
+        respostas.append(resposta)
+        previous_response = resposta
+        st.write(f"**Modelo Utilizado:** {agente.llm_config['model']}")
+        st.write(f"💡 Ação recomendada com base na Equação de Bellman: **{best_action}**")
+        yield f"\n🤖 **{agente.name}** respondeu: {resposta}"
+        st.write("________")
+        state = next_state
 
-        chat_result_6 = agente_6.generate_reply(messages=[{"role": "user", "content": f" {resposta_agente_5}"}])
-        resposta_agente_6 = chat_result_6['content']
-        st.write(f'**Modelo Utilizado** **{modelo_agente_6}**')
-        yield f"\n🧐**{agente_6.name}** respondeu, {resposta_agente_6}"
+    resposta_sintetizada = agente_7.generate_reply(messages=[{"role": "user", "content": " ".join(respostas)}])
+    resposta_final = resposta_sintetizada['content']
+    st.write(f"**Modelo Utilizado:** {agente_7.llm_config['model']}")
+    yield f"\n📝 **{agente_7.name}** sintetizou: {resposta_final}"
 
-        chat_result_7 = agente_7.generate_reply(messages=[{"role": "user", "content": f" Resposta do agente 1 :{resposta_agente_1}\n Resposta do agente 2 :{resposta_agente_2}\n Resposta do agente 3 :{resposta_agente_3}\n Resposta do agente 4: {resposta_agente_4}\n Resposta do agente 5: {resposta_agente_5}\n Resposta do agente 6: {resposta_agente_6}"}])
-        resposta_agente_7 = chat_result_7['content']
-        st.write(f'**Modelo Utilizado** **{modelo_agente_7}**')
-        yield f"\n👨‍🔬**{agente_7.name}** respondeu, {resposta_agente_7}"
 
-        
-        
 
 
 if button:
     with st.spinner('Aguarde um momento, os agentes estão batendo um papo 🗣...'):
-        resultado = chat1(assunto)
+        resultado = chat(assunto)
 
         for resultado in resultado:
 
