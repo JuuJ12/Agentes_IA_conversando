@@ -78,7 +78,7 @@ def get_best_action(state):
     if q_values:
         # Seleciona a melhor ação pelo valor Q máximo
         best_action = max(q_values, key=q_values.get)
-        return f"Ação mais promissora: {best_action[:100]}..."  # Mostra um resumo da ação
+        return f"Ação mais promissora: {best_action[:50]}..."  # Mostra um resumo da ação
     else:
         return "Nenhuma ação registrada"
 
