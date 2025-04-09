@@ -10,285 +10,202 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 load_dotenv()
-animacao2 = load_lottiefile('pictures/animacao_ia2.json')
+animacao2 = load_lottiefile('pictures/animacao_ia.json')
 
-# Função para calcular a similaridade de cosseno entre duas strings
+# Inicialização dos valores no session_state
+defaults = {
+    'funcao_agente1': 'Gerador de Hipóteses, explorando a literatura e usando técnicas como debates simulados e identificação iterativa de suposições para propor hipóteses de pesquisa. Escolha uma Hipótese caso não receba uma.',
+    'funcao_agente2': 'Revisor, avaliando criticamente hipóteses quanto à novidade, correção e qualidade, baseando-se em pesquisas na web e literatura científica, faça sua revisão lembrando que ela será passada para um organizador que utilizando um sistema de torneio baseado em Elo para classificar hipóteses com base em debates científicos e feedbacks de revisão, priorizando ideias promissoras.',
+    'funcao_agente3': 'Classificador, utilizando um sistema de torneio baseado em Elo para classificar hipóteses com base em debates científicos e feedbacks de revisão, priorizando ideias promissoras, faça sua classificação lembrando que ela será passada para um evololucionador que vai refinar as hipóteses mais bem classificadas ao incorporar novos insights, simplificar conceitos e explorar abordagens não convencionais.',
+    'funcao_agente4': 'Evolucionador,refinando as hipóteses mais bem classificadas ao incorporar novos insights, simplificar conceitos e explorar abordagens não convencionais, faça sua refinação lembrando que ela será passada para um organizador que vai agrupar hipóteses com base em similaridade para gerenciar o espaço de hipóteses e facilitar a exploração eficiente .',
+    'funcao_agente5': 'Organizador,  agrupando hipóteses com base em similaridade para gerenciar o espaço de hipóteses e facilitar a exploração eficiente, faã sua organização lembrando que ela será passada para um meta revisor que vai sintetizar feedbacks de todas as revisões e torneios para identificar problemas recorrentes e orientar a melhoria do sistema, criando efetivamente um ciclo de autoaperfeiçoamento..',
+    'funcao_agente6': 'Meta Revisor,sintetizando feedbacks de todas as revisões e torneios para identificar problemas recorrentes e orientar a melhoria do sistema, criando efetivamente um ciclo de autoaperfeiçoamento.',
+    'modelo_agente_1': 'llama3-70b-8192',
+    'modelo_agente_2': 'llama3-70b-8192',
+    'modelo_agente_3': 'llama3-70b-8192',
+    'modelo_agente_4': 'llama3-70b-8192',
+    'modelo_agente_5': 'llama3-70b-8192',
+    'modelo_agente_6': 'llama3-70b-8192',
+    'modelo_agente_7': 'llama3-70b-8192',
+    'idioma': 'Português',
+    'assunto': '',
+    'resposta_sintetizador': "",
+    'respostas_agentes': []
+}
 
+for key, value in defaults.items():
+    if key not in st.session_state:
+        st.session_state[key] = value
+
+# Funções auxiliares
 def distance(state, goal_state):
     try:
         vectorizer = TfidfVectorizer()
         tfidf_matrix = vectorizer.fit_transform([state, goal_state])
         similarity = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:2])[0][0]
-        dist = 1 - similarity  # Quanto maior a similaridade, menor a distância
-        return dist
+        return 1 - similarity
     except Exception as e:
         print(f"Erro ao calcular a distância: {e}")
-        return 1.0  # Distância máxima em caso de erro
+        return 1.0
 
-# Função para calcular a recompensa
 def calculate_reward(state, goal_state):
     try:
         dist = distance(state, goal_state)
-        reward = -dist  # Quanto menor a distância, maior a recompensa (valor negativo)
-        return reward
+        return -dist
     except Exception as e:
         print(f"Erro ao calcular a recompensa: {e}")
-        return -np.inf  # Penalidade alta em caso de erro
+        return -np.inf
 
-# Função para atualizar valor Q com tratamento de NaN
 q_table = {}
+epsilon = 0.1
 
 def update_q_value(state, action, reward, next_state, alpha=0.1, gamma=0.9):
     try:
         state_action = (state, action)
-        
-        # Inicializa valor Q se não existir
         if state_action not in q_table:
             q_table[state_action] = 0.0
-            
-        # Valor Q atual
         current_q = q_table[state_action]
-        
-        # Melhor valor Q para o próximo estado
         next_q_values = [q_table.get((next_state, a), 0.0) for a in range(6)]
         max_next_q = max(next_q_values) if next_q_values else 0.0
-
-        # Atualização de Q-Valor com verificação de NaN
         new_q = current_q + alpha * (reward + gamma * max_next_q - current_q)
-        if np.isnan(new_q):
-            print("Valor Q resultante é NaN. Ignorando atualização.")
-            return
-
-        q_table[state_action] = new_q
+        if not np.isnan(new_q):
+            q_table[state_action] = new_q
     except Exception as e:
         print(f"Erro ao atualizar valor Q: {e}")
 
-# Função para obter a melhor ação usando epsilon-greedy
-# Função para obter a melhor ação usando epsilon-greedy
-epsilon = 0.1
-
 def get_best_action(state):
-    # Exploração: escolher uma ação aleatória com probabilidade epsilon
     if random.uniform(0, 1) < epsilon:
-        return "Exploração Aleatória"  # Uma indicação clara de exploração
-
-    # Obter as ações registradas no estado atual
+        return "Exploração Aleatória"
     q_values = {action: q_value for (s, action), q_value in q_table.items() if s == state}
-    
     if q_values:
-        # Seleciona a melhor ação pelo valor Q máximo
         best_action = max(q_values, key=q_values.get)
-        return f"Ação mais promissora: {best_action[:50]}..."  # Mostra um resumo da ação
+        return f"Ação mais promissora no estado '{state}'"
     else:
         return "Nenhuma ação registrada"
 
+# UI
 st.title('Agentes de Inteligência Artificial')
 
 with st.expander('Sobre o Projeto'):
-    st.write('Esse sistema tem como objetivo mostrar como  agentes de Inteligência Artificial(IA) podem conversar entre si\
-                e resolver problemas juntos. Para iniciar a conversa, você pode definir assunto da conversa.')
-
+    st.write('Esse sistema tem como objetivo mostrar como agentes de Inteligência Artificial (IA) podem conversar entre si e resolver problemas juntos. Para iniciar a conversa, você pode definir assunto da conversa.')
 
 with st.expander('Ajustando seus Agentes'):
-    
     col1, col2 = st.columns(2)
     with col1:
         st.subheader('Função dos Agentes')
-
         st.write('Os agentes já vem com funções definidas porém, você pode alterar como você quiser!')
-
-        global funcao_agente1, funcao_agente2, funcao_agente3,funcao_agente4,funcao_agente5,funcao_agente6
-        funcao_agente1 = st.text_input(label='Função do Agente 1', help='Por padrão o Agente 1 é um Gerador de Hipóteses.',
-                             placeholder=' Exemplo: Planejador Estratégico') or 'Gerador de Hipóteses e escolherá algum assunto para gerar hipoteses.'
-        funcao_agente2 = st.text_input(label='Função do Agente 2', help='Por padrão o Agente 2 é um Revisor.',
-                             placeholder=' Exemplo: Analista de Tendêcnias') or 'Revisor'
-        funcao_agente3 = st.text_input(label='Função do Agente 3', help='Por padrão o Agente 3 é um Classficador.',
-                             placeholder=' Exemplo: Assistente de Aprendizado') or 'Classificador'
-        funcao_agente4 = st.text_input(label='Função do Agente 4', help='Por padrão o Agente 4 é um  Evolucionador.',
-                             placeholder=' Exemplo: Simulador de Cenários') or 'Evolucionador'
-        funcao_agente5 = st.text_input(label='Função do Agente 5', help='Por padrão o Agente 5 é um  Organizador.',
-                             placeholder=' Exemplo: Especialista em Criatividade') or 'Organizador'
-        funcao_agente6 = st.text_input(label='Função do Agente 6', help='Por padrão o Agente 6 é um Meta Revisor.',
-                             placeholder=' Exemplo: Medidor de Conflitos') or 'Meta Revisor'
+        st.session_state.funcao_agente1 = st.text_input('Função do Agente 1', help='Por padrão o Agente 1 é um Gerador de Hipóteses.', value=st.session_state.funcao_agente1) or 'Gerador de Hipóteses, explorando a literatura e usando técnicas como debates simulados e identificação iterativa de suposições para propor hipóteses de pesquisa. Escolha uma Hipótese caso não receba uma.'
+        st.session_state.funcao_agente2 = st.text_input('Função do Agente 2', help='Por padrão o Agente 2 é um Revisor.', value=st.session_state.funcao_agente2) or 'Revisor, avaliando criticamente hipóteses quanto à novidade, correção e qualidade, baseando-se em pesquisas na web e literatura científica.'
+        st.session_state.funcao_agente3 = st.text_input('Função do Agente 3', help='Por padrão o Agente 3 é um Classficador.', value=st.session_state.funcao_agente3) or'Classificador, utilizando um sistema de torneio baseado em Elo para classificar hipóteses com base em debates científicos e feedbacks de revisão, priorizando ideias promissoras.'
+        st.session_state.funcao_agente4 = st.text_input('Função do Agente 4', help='Por padrão o Agente 4 é um  Evolucionador.', value=st.session_state.funcao_agente4) or 'Evolucionador,refinando as hipóteses mais bem classificadas ao incorporar novos insights, simplificar conceitos e explorar abordagens não convencionais.'
+        st.session_state.funcao_agente5 = st.text_input('Função do Agente 5', help='Por padrão o Agente 5 é um  Organizador.', value=st.session_state.funcao_agente5) or 'Organizador,  agrupando hipóteses com base em similaridade para gerenciar o espaço de hipóteses e facilitar a exploração eficiente.'
+        st.session_state.funcao_agente6 = st.text_input('Função do Agente 6', help='Por padrão o Agente 6 é um Meta Revisor.', value=st.session_state.funcao_agente6) or 'Meta Revisor,sintetizando feedbacks de todas as revisões e torneios para identificar problemas recorrentes e orientar a melhoria do sistema, criando efetivamente um ciclo de autoaperfeiçoamento.'
     with col2:
         st.subheader('Modelos de IA')
-
         st.write('Por padrão os Agentes já vem com o modelo llama3-70b-8192.')
+        modelos = ['llama3-70b-8192', 'gemma2-9b-it', 'mistral-saba-24b']
+        for i in range(1, 8):
+            key = f'modelo_agente_{i}'
+            st.session_state[key] = st.selectbox(f'Modelo do Agente {i if i < 7 else "Sintetizador"}', modelos, index=modelos.index(st.session_state[key]))
 
-        global modelo_agente_1,modelo_agente_2,modelo_agente_3,modelo_agente_4,modelo_agente_5,modelo_agente_6
-        modelo_agente_1 = st.selectbox('Selecione o Modelo do Agente 1',options=['llama3-70b-8192',
-                                                                                 'gemma2-9b-it','mistral-saba-24b']) or 'llama3-70b-8192'
-       
-        modelo_agente_2 = st.selectbox('Selecione o Modelo do Agente 2',options=['llama3-70b-8192',
-                                                                                 'gemma2-9b-it','mistral-saba-24b'])or 'llama3-70b-8192'
-        
-        modelo_agente_3 = st.selectbox('Selecione o Modelo do Agente 3',options=['llama3-70b-8192',
-                                                                                 'gemma2-9b-it','mistral-saba-24b'])or 'llama3-70b-8192'
-        
-        modelo_agente_4 = st.selectbox('Selecione o Modelo do Agente 4',options=['llama3-70b-8192',
-                                                                                 'gemma2-9b-it','mistral-saba-24b'])or 'llama3-70b-8192'
-        
-        modelo_agente_5 = st.selectbox('Selecione o Modelo do Agente 5',options=['llama3-70b-8192',
-                                                                                 'gemma2-9b-it','mistral-saba-24b'])or 'llama3-70b-8192'
-        
-        modelo_agente_6 = st.selectbox('Selecione o Modelo do Agente 6',options=['llama3-70b-8192',
-                                                                                 'gemma2-9b-it','mistral-saba-24b'])or 'llama3-70b-8192'
-        modelo_agente_7 = st.selectbox('Selecione o Modelo do Agente Sintetizador',options=['llama3-70b-8192',
-                                                                                 'gemma2-9b-it','mistral-saba-24b'])or 'llama3-70b-8192'
-
-col1,col2 = st.columns([1.2,0.5], vertical_alignment='center')
+col1, col2 = st.columns([1.2, 0.5])
 with col1:
-    global idioma
-    idioma = st.selectbox(label='Idioma', options=['Português','Inglês','Japonês','Russo','Espanhol','Frânces','Italiano'], help='Idioma que os Agentes irão responder')
-
-    global assunto
-    assunto = st.text_input(label='Assunto', help='Escreva o que você deseja, uma duvida, um problema, qualquer coisa !',
-                             placeholder=' Exemplo: Eu tenho uma abordagem X para o problema P vs NP')
-    button= st.button('Iniciar Conversa')
-
+    st.session_state.idioma = st.selectbox('Idioma', ['Português', 'Inglês', 'Japonês', 'Russo', 'Espanhol', 'Frânces', 'Italiano'], index=['Português', 'Inglês', 'Japonês', 'Russo', 'Espanhol', 'Frânces', 'Italiano'].index(st.session_state.idioma))
+    st.session_state.assunto = st.text_input('Assunto',  help='Escreva o que você deseja, uma duvida, um problema, qualquer coisa !',value=st.session_state.assunto)
+    button = st.button('Iniciar Conversa')
 
 with col2:
-    animacao = load_lottiefile('pictures/animacao_ia.json')
-    
-    st_lottie(animacao)
+    st_lottie(animacao2)
 
-    
+# Criação dos agentes
+def criar_agente(nome, funcao, modelo):
+    return ConversableAgent(
+        name=nome,
+        system_message=(f'Você vai responder sempre em {st.session_state.idioma}, sempre vai atacar e tentar resolver o problema e sua função é {funcao}.'),
+        llm_config={
+            "model": modelo,
+            "api_key": os.getenv("GROQ_API_KEY"),
+            "api_type": "groq",
+            "temperature": 0
+        }
+    )
 
-agente_1 = ConversableAgent(
-    name= 'Agente-1',
-    system_message=(f'Você vai responder sempre em {idioma}, sempre vai atacar e tentar resolver o problema e sua função é {funcao_agente1}. '),
-    llm_config={
-        "model": modelo_agente_1,
-          
-        "api_key": os.getenv("GROQ_API_KEY"),
-        "api_type": "groq",
-        "temperature":0
-    },
-)
-
-
-agente_2 = ConversableAgent(
-    name="Agente-2",
-    system_message=(f'Você vai responder sempre em {idioma}, sempre vai atacar e tentar resolver o problema e sua função é {funcao_agente2} '),
-    llm_config={
-        "model": modelo_agente_2,
-          
-        "api_key": os.getenv("GROQ_API_KEY"),
-        "api_type": "groq",
-        "temperature":0
-    },
-)
-
-agente_3 = ConversableAgent(
-    name="Agente-3",
-    system_message=(f'''Você vai responder sempre em {idioma}, sempre vai atacar e tentar resolver o problema e sua função é {funcao_agente3}.'''),
-    llm_config={
-        "model": modelo_agente_3,
-          
-        "api_key": os.getenv("GROQ_API_KEY"),
-        "api_type": "groq",
-        "temperature":0
-    },
-)
-
-
-agente_4 = ConversableAgent(
-    name="Agente-4",
-    system_message=(f'''Você vai responder sempre em {idioma}, sempre vai atacar e tentar resolver o problema e sua função é {funcao_agente4}.'''),
-    llm_config={
-        "model": modelo_agente_4,
-          
-        "api_key": os.getenv("GROQ_API_KEY"),
-        "api_type": "groq",
-        "temperature":0
-    },
-)
-
-
-agente_5 = ConversableAgent(
-    name="Agente-5",
-    system_message=(f'''Você vai responder sempre em {idioma}, sempre vai atacar e tentar resolver o problema e sua função é {funcao_agente5}.'''),
-    llm_config={
-        "model": modelo_agente_5,
-          
-        "api_key": os.getenv("GROQ_API_KEY"),
-        "api_type": "groq",
-        "temperature":0
-    },
-)
-
-agente_6 = ConversableAgent(
-    name="Agente-6",
-    system_message=(f'''Você vai responder sempre em {idioma}, sempre vai atacar e tentar resolver o problema e sua função é {funcao_agente6}.'''),
-    llm_config={
-        "model": modelo_agente_6,
-          
-        "api_key": os.getenv("GROQ_API_KEY"),
-        "api_type": "groq",
-        "temperature":0
-    },
-)
+agentes = [criar_agente(f'Agente-{i+1}', st.session_state[f'funcao_agente{i+1}'], st.session_state[f'modelo_agente_{i+1}']) for i in range(6)]
 
 agente_7 = ConversableAgent(
     name="Agente-7-Sintetizador",
-    system_message=(f'''Você vai responder sempre em {idioma}. Sua função será:
-                    1. Ler todas as soluções finais dos debatedores.
-                    2. Consolidar uma solução final abrangente para o problema abordado, unificando as principais contribuições.
-                    3. Elencar as melhores ideias dos debatedores de forma clara e estruturada, destacando os autores e justificando por que essas ideias se destacam no debate realizado.
-                    4. Finalizar com uma conclusão destacando os pontos-chave que representam o consenso ou as ideias mais inovadoras e impactantes.
-                    5. Reescrever o texto inicial, incorporando as sugestões discutidas e aplicando as melhorias apontadas no debate. O texto reformulado deve ser coeso, claro e refletir as correções sugeridas.
-                    6. Considere o texto inicial como o conteúdo apresentado pelo primeiro agente que iniciou a discussão.
-                    '''),
+    system_message=(f'''Você vai responder sempre em {st.session_state.idioma}. Sua função será:
+        1. Ler todas as soluções finais dos debatedores.
+        2. Consolidar uma solução final abrangente.
+        3. Elencar as melhores ideias dos debatedores.
+        4. Finalizar com uma conclusão.
+        5. Reescrever o texto inicial.'''),
     llm_config={
-        "model": modelo_agente_7,
-          
+        "model": st.session_state.modelo_agente_7,
         "api_key": os.getenv("GROQ_API_KEY"),
         "api_type": "groq",
-        "temperature":0
-    },
+        "temperature": 0
+    }
 )
 
-        
+# Chat
 def chat(assunto):
     state = "inicio"
     previous_response = assunto
-    agentes = [agente_1, agente_2, agente_3, agente_4, agente_5, agente_6]
     respostas = []
 
     for idx, agente in enumerate(agentes):
         chat_result = agente.generate_reply(messages=[{"role": "user", "content": previous_response}])
         resposta = chat_result['content']
         next_state = f"debate-{idx+1}"
-        
-        # Calcula a recompensa com base na resposta
-        goal_state = "objetivo"  # Defina um estado objetivo apropriado
-        reward = calculate_reward(resposta, goal_state)
+        reward = calculate_reward(resposta, "objetivo")
         update_q_value(state, resposta, reward, next_state)
         best_action = get_best_action(state)
 
         respostas.append(resposta)
         previous_response = resposta
-        st.write(f"**Modelo Utilizado:** {agente.llm_config.config_list[0]['model']}")
-        st.write(f"💡 Ação recomendada com base na Equação de Bellman: **{best_action}**")
+
+        # Salvando a resposta no session_state
+        st.session_state.respostas_agentes.append({
+            "modelo": agente.llm_config.config_list[0]['model'],
+            "nome": agente.name,
+            "resposta": resposta,
+            "acao": best_action
+        })
+
         yield f"\n🤖 **{agente.name}** respondeu: {resposta}"
-        st.write("________")
         state = next_state
 
     resposta_sintetizada = agente_7.generate_reply(messages=[{"role": "user", "content": " ".join(respostas)}])
-    resposta_final = resposta_sintetizada['content']
-    st.write(f"**Modelo Utilizado:** {agente_7.llm_config.config_list[0]['model']}")
-    yield f"\n📝 **{agente_7.name}** sintetizou: {resposta_final}"
+    st.session_state.resposta_sintetizador = resposta_sintetizada['content']
+    yield f"\n📝 **{agente_7.name}** sintetizou: {resposta_sintetizada['content']}"
 
 
-
-
+# Execução
 if button:
     with st.spinner('Aguarde um momento, os agentes estão batendo um papo 🗣...'):
-        resultado = chat(assunto)
+        for resultado in chat(st.session_state.assunto):
+            with st.chat_message('ai'):
+                st.write(resultado)
+if button:
+    # Resetar respostas antigas
+    st.session_state.respostas_agentes = []
+    st.session_state.resposta_sintetizador = ""
 
-        for resultado in resultado:
+    with st.spinner('Aguarde um momento, os agentes estão batendo um papo 🗣...'):
+        for resultado in chat(st.session_state.assunto):
+            with st.chat_message('ai'):
+                st.write(resultado)
 
-                with st.chat_message('ai'):
-                    st.write(resultado)
+if 'respostas_agentes' in st.session_state and st.session_state.respostas_agentes:
+    st.subheader("💬 Respostas anteriores dos agentes:")
+    for resposta in st.session_state.respostas_agentes:
+        st.write(f"**{resposta['nome']}** (modelo: {resposta['modelo']})")
+        st.write(f"🗣 Resposta: {resposta['resposta']}")
+        st.markdown("---")
 
+
+if 'resposta_sintetizador' in st.session_state and st.session_state.resposta_sintetizador:
+    st.subheader("📝 Resposta do Agente Sintetizador:")
+    st.write(st.session_state.resposta_sintetizador)
 
