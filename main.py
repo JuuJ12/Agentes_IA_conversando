@@ -37,10 +37,16 @@ pag3 = st.Page(
     icon= 'ℹ'
 )
 
+pag4 = st.Page(
+    page= "paginas/first_steps.py",
+    title="Como Dar os Primeiro Passos",
+    icon= '🚶‍♂️'
+)
 
 paginas= st.navigation({
         "Conversação":[pag1],
         "Agentes Ciêntistas":[pag2],
+        "Primeiros Passos":[pag4],
         "Info":[pag3]
 
 
