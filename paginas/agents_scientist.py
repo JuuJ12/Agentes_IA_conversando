@@ -183,11 +183,6 @@ def chat(assunto):
 
 # Execução
 if button:
-    with st.spinner('Aguarde um momento, os agentes estão batendo um papo 🗣...'):
-        for resultado in chat(st.session_state.assunto):
-            with st.chat_message('ai'):
-                st.write(resultado)
-if button:
     # Resetar respostas antigas
     st.session_state.respostas_agentes = []
     st.session_state.resposta_sintetizador = ""
