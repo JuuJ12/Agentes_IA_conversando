@@ -46,7 +46,7 @@ agente_1 = ConversableAgent(
     name='Agente1',
     system_message=(f'Você vai responder sempre no idioma {idioma} e será {agente1}'),
     llm_config={
-        "model": "qwen-2.5-32b",
+        "model": "llama3-70b-8192",
           
         "api_key": os.getenv("GROQ_API_KEY"),
         "api_type": "groq",
@@ -59,7 +59,7 @@ agente_2 = ConversableAgent(
     name="Agente2",
     system_message=(f' Você vai responder sempre no idiomar {idioma} e será {agente2}'),
     llm_config={
-        "model": "qwen-2.5-32b",
+        "model": "llama3-70b-8192",
           
         "api_key": os.getenv("GROQ_API_KEY"),
         "api_type": "groq",
