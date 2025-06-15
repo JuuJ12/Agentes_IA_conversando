@@ -1,9 +1,9 @@
 import os
-from autogen import ConversableAgent
 from dotenv import load_dotenv
 import streamlit as st
 from streamlit_lottie import st_lottie
 from paginas.me import load_lottiefile
+from Agents.funções_conversa_simples import criando_agentes,chat
 
 load_dotenv()
 animacao2 = load_lottiefile('pictures/animacao_ia2.json')
@@ -20,10 +20,10 @@ col1,col2 = st.columns([1.2,0.5], vertical_alignment='center')
 with col1:
     idioma = st.selectbox(label='Idioma', options=['Português','Inglês','Japonês','Russo','Espanhol','Frânces','Italiano'])
 
-    agente1=st.text_input(label='Função do Agente 1', help='Defina Qual Será a Especialidade do Agente 1 . ', 
+    função_agente1=st.text_input(label='Função do Agente 1', help='Defina Qual Será a Especialidade do Agente 1 . ', 
                           placeholder='Ex: Profissional de Logística', key='agente1')
 
-    agente2=st.text_input(label='Função do Agente 2', help='Defina Qual Será a Especialidade do Agente 2.', 
+    função_agente2=st.text_input(label='Função do Agente 2', help='Defina Qual Será a Especialidade do Agente 2.', 
                           placeholder='Ex: Profissional de Engenharia')
 
     assunto = st.text_input(label='Assunto', help='Defina Sobre o que os Agentes Irão Falar ou o que Irão Resolver.',
@@ -42,57 +42,17 @@ with col2:
     st_lottie(animacao)
     
 
-agente_1 = ConversableAgent(
-    name='Agente1',
-    system_message=(f'Você vai responder sempre no idioma {idioma} e será {agente1}'),
-    llm_config={
-        "model": "llama3-70b-8192",
-          
-        "api_key": os.getenv("GROQ_API_KEY"),
-        "api_type": "groq",
-        "temperature":1
-    },
-)
-
-
-agente_2 = ConversableAgent(
-    name="Agente2",
-    system_message=(f' Você vai responder sempre no idiomar {idioma} e será {agente2}'),
-    llm_config={
-        "model": "llama3-70b-8192",
-          
-        "api_key": os.getenv("GROQ_API_KEY"),
-        "api_type": "groq",
-        "temperature":1
-    },
-)
-
-
-def chat1(assunto):
-        chat_result = agente_1.initiate_chat(
-            agente_2,
-            message=assunto,
-            max_turns=turnos
-        )
-        return chat_result
-
-
-def chat2(assunto):
-        chat_result = agente_2.initiate_chat(
-            agente_1,
-            message=assunto,
-            max_turns=turnos
-        )
-        return chat_result
+agente_1 = criando_agentes(idioma, função_agente1, 'Agente 1')
+agente_2 = criando_agentes(idioma, função_agente2, 'Agente 2')
 
 if button:
     with st.spinner('Aguarde um momento, os agentes estão batendo um papo 🗣...'):
         if escolha == 'Agente 1':
-        
-            resultado = chat1(assunto)
+
+            resultado = chat(agente_1,agente_2, assunto, turnos)
 
         else:
-             resultado = chat2(assunto)
+            resultado = chat(agente_2,agente_1, assunto, turnos)
 
     for turn in resultado.chat_history:
             with st.chat_message('ai'):
