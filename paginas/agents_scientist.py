@@ -20,13 +20,13 @@ defaults = {
     'funcao_agente4': 'Evolucionador,refinando as hipóteses mais bem classificadas ao incorporar novos insights, simplificar conceitos e explorar abordagens não convencionais, faça sua refinação lembrando que ela será passada para um organizador que vai agrupar hipóteses com base em similaridade para gerenciar o espaço de hipóteses e facilitar a exploração eficiente .',
     'funcao_agente5': 'Organizador,  agrupando hipóteses com base em similaridade para gerenciar o espaço de hipóteses e facilitar a exploração eficiente, faã sua organização lembrando que ela será passada para um meta revisor que vai sintetizar feedbacks de todas as revisões e torneios para identificar problemas recorrentes e orientar a melhoria do sistema, criando efetivamente um ciclo de autoaperfeiçoamento..',
     'funcao_agente6': 'Meta Revisor,sintetizando feedbacks de todas as revisões e torneios para identificar problemas recorrentes e orientar a melhoria do sistema, criando efetivamente um ciclo de autoaperfeiçoamento.',
-    'modelo_agente_1': 'groq/compound',
-    'modelo_agente_2': 'groq/compound',
-    'modelo_agente_3': 'groq/compound',
-    'modelo_agente_4': 'groq/compound',
-    'modelo_agente_5': 'groq/compound',
-    'modelo_agente_6': 'groq/compound',
-    'modelo_agente_7': 'groq/compound',
+    'modelo_agente_1': 'llama-3.1-8b-instant',
+    'modelo_agente_2': 'llama-3.1-8b-instant',
+    'modelo_agente_3': 'llama-3.1-8b-instant',
+    'modelo_agente_4': 'llama-3.1-8b-instant',
+    'modelo_agente_5': 'llama-3.1-8b-instant',
+    'modelo_agente_6': 'llama-3.1-8b-instant',
+    'modelo_agente_7': 'llama-3.1-8b-instant',
     'idioma': 'Português',
     'assunto': '',
     'resposta_sintetizador': "",
@@ -37,15 +37,13 @@ for key, value in defaults.items():
     if key not in st.session_state:
         st.session_state[key] = value
 
-# Model sanitization: ensure agent model names are valid Groq models
-ALLOWED_MODELS = ['groq/compound', 'groq/compound-mini']
 for i in range(1, 8):
     mkey = f'modelo_agente_{i}'
     if mkey in st.session_state:
         if not isinstance(st.session_state[mkey], str) or not st.session_state[mkey].startswith('groq/'):
-            st.session_state[mkey] = 'groq/compound'
+            st.session_state[mkey] = 'llama-3.1-8b-instant'
     else:
-        st.session_state[mkey] = 'groq/compound'
+        st.session_state[mkey] = 'llama-3.1-8b-instant'
 
 # Funções auxiliares
 def distance(state, goal_state):
@@ -112,8 +110,8 @@ with st.expander('Ajustando seus Agentes'):
         st.session_state.funcao_agente6 = st.text_input('Função do Agente 6', help='Por padrão o Agente 6 é um Meta Revisor.', value=st.session_state.funcao_agente6) or 'Meta Revisor,sintetizando feedbacks de todas as revisões e torneios para identificar problemas recorrentes e orientar a melhoria do sistema, criando efetivamente um ciclo de autoaperfeiçoamento.'
     with col2:
         st.subheader('Modelos de IA')
-        st.write('Por padrão os Agentes já vem com o modelo groq/compound.')
-        modelos = ['groq/compound-mini']
+        st.write('Por padrão os Agentes já vem com o modelo llama-3.1-8b-instant.')
+        modelos = ['llama-3.1-8b-instant','groq/compound-mini','openai/gpt-oss-safeguard-20b']
         for i in range(1, 8):
             key = f'modelo_agente_{i}'
             # Guard against invalid session values by falling back to default index
