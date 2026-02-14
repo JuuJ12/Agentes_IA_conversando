@@ -20,13 +20,13 @@ defaults = {
     'funcao_agente4': 'Evolucionador,refinando as hipóteses mais bem classificadas ao incorporar novos insights, simplificar conceitos e explorar abordagens não convencionais, faça sua refinação lembrando que ela será passada para um organizador que vai agrupar hipóteses com base em similaridade para gerenciar o espaço de hipóteses e facilitar a exploração eficiente .',
     'funcao_agente5': 'Organizador,  agrupando hipóteses com base em similaridade para gerenciar o espaço de hipóteses e facilitar a exploração eficiente, faã sua organização lembrando que ela será passada para um meta revisor que vai sintetizar feedbacks de todas as revisões e torneios para identificar problemas recorrentes e orientar a melhoria do sistema, criando efetivamente um ciclo de autoaperfeiçoamento..',
     'funcao_agente6': 'Meta Revisor,sintetizando feedbacks de todas as revisões e torneios para identificar problemas recorrentes e orientar a melhoria do sistema, criando efetivamente um ciclo de autoaperfeiçoamento.',
-    'modelo_agente_1': 'llama3-70b-8192',
-    'modelo_agente_2': 'llama3-70b-8192',
-    'modelo_agente_3': 'llama3-70b-8192',
-    'modelo_agente_4': 'llama3-70b-8192',
-    'modelo_agente_5': 'llama3-70b-8192',
-    'modelo_agente_6': 'llama3-70b-8192',
-    'modelo_agente_7': 'llama3-70b-8192',
+    'modelo_agente_1': 'llama-3.3-70b-versatile',
+    'modelo_agente_2': 'llama-3.3-70b-versatile',
+    'modelo_agente_3': 'llama-3.3-70b-versatile',
+    'modelo_agente_4': 'llama-3.3-70b-versatile',
+    'modelo_agente_5': 'llama-3.3-70b-versatile',
+    'modelo_agente_6': 'llama-3.3-70b-versatile',
+    'modelo_agente_7': 'llama-3.3-70b-versatile',
     'idioma': 'Português',
     'assunto': '',
     'resposta_sintetizador': "",
@@ -102,8 +102,8 @@ with st.expander('Ajustando seus Agentes'):
         st.session_state.funcao_agente6 = st.text_input('Função do Agente 6', help='Por padrão o Agente 6 é um Meta Revisor.', value=st.session_state.funcao_agente6) or 'Meta Revisor,sintetizando feedbacks de todas as revisões e torneios para identificar problemas recorrentes e orientar a melhoria do sistema, criando efetivamente um ciclo de autoaperfeiçoamento.'
     with col2:
         st.subheader('Modelos de IA')
-        st.write('Por padrão os Agentes já vem com o modelo llama3-70b-8192.')
-        modelos = ['llama3-70b-8192', 'gemma2-9b-it', 'mistral-saba-24b']
+        st.write('Por padrão os Agentes já vem com o modelo llama-3.3-70b-versatile.')
+        modelos = ['llama-3.3-70b-versatile', 'gemma2-9b-it', 'mistral-saba-24b']
         for i in range(1, 8):
             key = f'modelo_agente_{i}'
             st.session_state[key] = st.selectbox(f'Modelo do Agente {i if i < 7 else "Sintetizador"}', modelos, index=modelos.index(st.session_state[key]))
