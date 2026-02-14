@@ -37,6 +37,16 @@ for key, value in defaults.items():
     if key not in st.session_state:
         st.session_state[key] = value
 
+# Model sanitization: ensure agent model names are valid Groq models
+ALLOWED_MODELS = ['groq/compound', 'groq/compound-mini']
+for i in range(1, 8):
+    mkey = f'modelo_agente_{i}'
+    if mkey in st.session_state:
+        if not isinstance(st.session_state[mkey], str) or not st.session_state[mkey].startswith('groq/'):
+            st.session_state[mkey] = 'groq/compound'
+    else:
+        st.session_state[mkey] = 'groq/compound'
+
 # Funções auxiliares
 def distance(state, goal_state):
     try:
@@ -103,10 +113,16 @@ with st.expander('Ajustando seus Agentes'):
     with col2:
         st.subheader('Modelos de IA')
         st.write('Por padrão os Agentes já vem com o modelo groq/compound.')
-        modelos = ['meta-llama/llama-4-scout-17b-16e-instruct', 'groq/compound', 'groq/compound-mini']
+        modelos = ['groq/compound-mini']
         for i in range(1, 8):
             key = f'modelo_agente_{i}'
-            st.session_state[key] = st.selectbox(f'Modelo do Agente {i if i < 7 else "Sintetizador"}', modelos, index=modelos.index(st.session_state[key]))
+            # Guard against invalid session values by falling back to default index
+            try:
+                idx = modelos.index(st.session_state[key])
+            except ValueError:
+                idx = 0
+                st.session_state[key] = modelos[0]
+            st.session_state[key] = st.selectbox(f'Modelo do Agente {i if i < 7 else "Sintetizador"}', modelos, index=idx)
 
 col1, col2 = st.columns([1.2, 0.5])
 with col1:
@@ -127,7 +143,7 @@ def criar_agente(nome, funcao, modelo):
             "api_key": os.getenv("GROQ_API_KEY"),
             "api_type": "groq",
             "temperature": 0,
-            'max_tokens': 8192
+            'max_tokens': 500
         }
     )
 
