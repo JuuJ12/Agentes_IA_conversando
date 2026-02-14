@@ -12,7 +12,7 @@ def criando_agentes(idioma : str, função :str, nome: str) -> tuple:
         name= nome,
         system_message=(f'Você vai responder sempre no idioma {idioma} e será {função}'),
         llm_config={
-            "model": "llama3-70b-8192",
+            "model": "llama-3.3-70b-versatile",
             
             "api_key": os.getenv("GROQ_API_KEY"),
             "api_type": "groq",
